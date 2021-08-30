@@ -10,15 +10,18 @@ datasource db {
 model User {
   email String  @unique
   id    Int     @id @default(autoincrement())
-  name  String?
-  posts Post[]
+  name  String
+  contacts Contacts[]
 }
 
-model Post {
-  authorId  Int?
-  content   String?
+model Contacts {
+  ownerId   Int
   id        Int     @id @default(autoincrement())
-  published Boolean @default(false)
-  title     String
-  author    User?   @relation(fields: [authorId], references: [id])
+  name      String
+  lastname  String?
+  email     String?
+  address   String?
+  phone     Int?
+  birthday  DateTime?
+  owner    User   @relation(fields: [ownerId], references: [id])
 }
