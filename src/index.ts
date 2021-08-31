@@ -7,6 +7,7 @@ const app = express()
 import morgan from 'morgan'
 import { schema } from './schema'
 import { context } from './context'
+import { mainModule } from 'process';
 
 app.use(cors())
 app.use(express.json())
@@ -24,58 +25,13 @@ app.use(
 app.get(`/api`, async (req:Request, res:Response) => {
   res.json({ up: true })
 })
-app.get(`/api/seed`, async (req, res) => {
-  console.log(prisma)
-  const seedUser = {
-    email: 'jane@prisma.io',
-    name: 'Jane',
-    }
-  try {
-    await prisma.user.deleteMany({
-      where: {
-        email: 'jane@prisma.io',
-      },
-    })
-
-    const result = await prisma.user.create({
-      data: seedUser,
-    })
-    res.json(result)
-  } catch (e) {
-    console.error(e)
-    res.sendStatus(500)
-  }
-})
 // app.get(`/api/seed`, async (req, res) => {
+//   console.log(prisma)
 //   const seedUser = {
 //     email: 'jane@prisma.io',
 //     name: 'Jane',
-//     contacts: {
-//       create: [
-//         {
-//           title:
-//             'Comparing Database Types: How Database Types Evolved to Meet Different Needs',
-//           content:
-//             'https://www.prisma.io/blog/comparison-of-database-models-1iz9u29nwn37/',
-//           published: true,
-//         },
-//         {
-//           title: 'Analysing Sleep Patterns: The Quantified Self',
-//           content: 'https://quantifiedself.com/get-started/',
-//           published: true,
-//         },
-//       ],
-//     },
-//   }
-
+//     }
 //   try {
-//     await prisma.post.deleteMany({
-//       where: {
-//         author: {
-//           email: 'jane@prisma.io',
-//         },
-//       },
-//     })
 //     await prisma.user.deleteMany({
 //       where: {
 //         email: 'jane@prisma.io',
@@ -91,6 +47,53 @@ app.get(`/api/seed`, async (req, res) => {
 //     res.sendStatus(500)
 //   }
 // })
+app.get(`/api/seed`, async (req, res) => {
+  const seedUser = {
+    email: 'jane@prisma.io',
+    name: 'Jane',
+    contacts: {
+      create: [
+        {
+          name: "Rob",
+          lastname: "Schneider",
+          email: "robanima@mainModule.com",
+          address: "4935 ELMWOOD LOS ANGELES CA 90004-1605 USA",
+          phone: 46543329,
+        },
+        {
+          name: "Adam",
+          lastname: "Sandler",
+          email: "adamsandler@mainModule.com",
+          address: "4936 ELMWOOD LOS ANGELES CA 90004-1605 USA",
+          phone: 46543330,
+        }        
+      ],
+    },
+  }
+
+  try {
+    await prisma.contacts.deleteMany({
+      where: {
+        owner: {
+          email: 'jane@prisma.io',
+        },
+      },
+    })
+    await prisma.user.deleteMany({
+      where: {
+        email: 'jane@prisma.io',
+      },
+    })
+    console.log("hasta aca llegamos")
+    const result = await prisma.user.create({
+      data: seedUser,
+    })
+    res.json(result)
+  } catch (e) {
+    console.error(e)
+    res.sendStatus(500)
+  }
+})
 
 // app.post(`/api/user`, async (req, res) => {
 //   const result = await prisma.user.create({
