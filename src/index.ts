@@ -1,22 +1,56 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const { PrismaClient } = require('@prisma/client')
-
+import express, {Request,Response} from 'express'
+import { PrismaClient } from '@prisma/client'
+import cors from 'cors'
+import { graphqlHTTP } from "express-graphql";
 const prisma = new PrismaClient()
 const app = express()
+import morgan from 'morgan'
+import { schema } from './schema'
+import { context } from './context'
 
-// app.use(bodyParser.json())
-// app.use(express.static('public'))
+app.use(cors())
+app.use(express.json())
+app.use(morgan('dev'));
+app.use(express.static('public'))
 
-// app.get(`/api`, async (req, res) => {
-//   res.json({ up: true })
-// })
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema,
+    context: context,
+    graphiql: true,
+  }),
+)
+app.get(`/api`, async (req:Request, res:Response) => {
+  res.json({ up: true })
+})
+app.get(`/api/seed`, async (req, res) => {
+  console.log(prisma)
+  const seedUser = {
+    email: 'jane@prisma.io',
+    name: 'Jane',
+    }
+  try {
+    await prisma.user.deleteMany({
+      where: {
+        email: 'jane@prisma.io',
+      },
+    })
 
+    const result = await prisma.user.create({
+      data: seedUser,
+    })
+    res.json(result)
+  } catch (e) {
+    console.error(e)
+    res.sendStatus(500)
+  }
+})
 // app.get(`/api/seed`, async (req, res) => {
 //   const seedUser = {
 //     email: 'jane@prisma.io',
 //     name: 'Jane',
-//     posts: {
+//     contacts: {
 //       create: [
 //         {
 //           title:
@@ -141,7 +175,7 @@ const app = express()
 // })
 
 const PORT = process.env.PORT || 3000
-const server = app.listen(PORT, () =>
+const server = app.listen(PORT, ():void =>
   console.log(
     `🚀 Server ready at: http://localhost:${PORT}\n⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`,
   ),
