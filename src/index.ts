@@ -58,14 +58,14 @@ app.get(`/api/seed`, async (req, res) => {
           lastname: "Schneider",
           email: "robanima@mainModule.com",
           address: "4935 ELMWOOD LOS ANGELES CA 90004-1605 USA",
-          phone: 46543329,
+          phone: "46543329",
         },
         {
           name: "Adam",
           lastname: "Sandler",
           email: "adamsandler@mainModule.com",
           address: "4936 ELMWOOD LOS ANGELES CA 90004-1605 USA",
-          phone: 46543330,
+          phone: "46543330",
         }        
       ],
     },

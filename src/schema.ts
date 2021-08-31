@@ -1,6 +1,5 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { Context } from './context'
-//deleteUser(id: Int!): User
 const typeDefs = `
 
 type Query {
@@ -27,7 +26,8 @@ type Contact {
   name:      String
   lastname:  String
   address:   String
-  phone:     Int
+  phone:     String
+  birthday:  String
   owner:     User 
 }
 
@@ -36,8 +36,10 @@ input ContactCreateInput {
   name:      String
   lastname:  String
   address:   String
-  phone:     Int
+  phone:     String
+  birthday:  String
 }
+
 `
 
 const resolvers = {
@@ -51,12 +53,6 @@ const resolvers = {
         include:{contacts:true}
       })  
     },
-
-    // contacts: (_parent: any, args: { owner: number }, context: Context) => {
-    //   return context.prisma.contacts.findMany({
-    //     where: { owner: args.owner || undefined }
-    //   })
-    // },
   },
   Mutation: {
     deleteContact: (_parent: any, args: { id: number }, context: Context) => {
@@ -72,6 +68,7 @@ const resolvers = {
           email: args.data.email,
           address: args.data.address,
           phone: args.data.phone,
+          birthday: args.data.birthday,
           owner: {
             connect: { id: args.id },
           },
@@ -88,25 +85,12 @@ const resolvers = {
           lastname: args.data.lastname,
           email: args.data.email,
           address: args.data.address,
-          phone: args.data.phone
+          phone: args.data.phone,
+          birthday: args.data.birthday
         }
       })
     }            
-  }
-  // Contact: {
-  //   owner: (parent: { id: any }, _args: any, context: Context) => {
-  //     return context.prisma.contacts.findUnique({
-  //       where: { id: parent?.id }
-  //     }).owner()
-  //   }
-  // },  
-  // User: {
-  //   contacs: (parent: { id: any }, _args: any, context: Context) => {
-  //     return context.prisma.user.findUnique({
-  //       where: { id: parent?.id }
-  //     }).contacts()
-  //   }
-  // }  
+  },
 }
 
 interface ContactCreateInput {
@@ -114,7 +98,8 @@ interface ContactCreateInput {
   name:      string,
   lastname:  string,
   address:   string,
-  phone:     number
+  phone:     string,
+  birthday:  string
 }
 
 export const schema = makeExecutableSchema({

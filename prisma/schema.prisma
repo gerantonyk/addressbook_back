@@ -21,7 +21,7 @@ model Contacts {
   lastname  String?
   email     String?
   address   String?
-  phone     Int?
-  birthday  DateTime?
+  phone     String?
+  birthday  String?
   owner    User   @relation(fields: [ownerId], references: [id])
 }
