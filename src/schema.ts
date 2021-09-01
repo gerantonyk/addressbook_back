@@ -5,6 +5,7 @@ const typeDefs = `
 type Query {
   users: [User!]!
   user(id: Int): User
+  contact(id: Int):Contact
 }
 
 type Mutation {
@@ -53,6 +54,11 @@ const resolvers = {
         include:{contacts:true}
       })  
     },
+    contact: (_parent: any, args: { id: number }, context: Context) => {
+      return context.prisma.contacts.findUnique({
+        where: { id: args.id || undefined }
+      })    
+    },    
   },
   Mutation: {
     deleteContact: (_parent: any, args: { id: number }, context: Context) => {
