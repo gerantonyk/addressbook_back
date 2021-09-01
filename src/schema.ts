@@ -51,7 +51,7 @@ const resolvers = {
     user: (_parent: any, args: { id: number }, context: Context) => {
       return context.prisma.user.findUnique({
         where: { id: args.id || undefined },
-        include:{contacts:true}
+        include:{contacts:{orderBy: {lastname:'asc'}}}
       })  
     },
     contact: (_parent: any, args: { id: number }, context: Context) => {
@@ -62,6 +62,7 @@ const resolvers = {
   },
   Mutation: {
     deleteContact: (_parent: any, args: { id: number }, context: Context) => {
+      console.log("se esta tratando de ejecutar",args.id)
       return context.prisma.contacts.delete({
         where: { id: args.id },
       })
