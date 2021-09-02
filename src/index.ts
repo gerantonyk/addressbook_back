@@ -14,7 +14,7 @@ app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'));
 app.use(express.static('public'))
-console.log(seed)
+
 app.use(
   '/graphql',
   graphqlHTTP({
@@ -103,7 +103,6 @@ app.get(`/api/seed`, async (req, res) => {
 
 
 app.get('/api/feed', async (req:Request, res:Response) => {
-  console.log("llego aca")
   context.prisma.user.findMany({include:{contacts:true}})
   .then(r=>res.json(r))
   
