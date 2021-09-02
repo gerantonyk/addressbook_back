@@ -8,12 +8,13 @@ import morgan from 'morgan'
 import { schema } from './schema'
 import { context } from './context'
 import { mainModule } from 'process';
+import {seed} from './seeds';
 
 app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'));
 app.use(express.static('public'))
-
+console.log(seed)
 app.use(
   '/graphql',
   graphqlHTTP({
@@ -48,46 +49,50 @@ app.get(`/api`, async (req:Request, res:Response) => {
 //   }
 // })
 app.get(`/api/seed`, async (req, res) => {
-  const seedUser = {
-    email: 'jane@prisma.io',
-    name: 'Jane',
-    contacts: {
-      create: [
-        {
-          name: "Rob",
-          lastname: "Schneider",
-          email: "robanima@mainModule.com",
-          address: "4935 ELMWOOD LOS ANGELES CA 90004-1605 USA",
-          phone: "46543329",
-        },
-        {
-          name: "Adam",
-          lastname: "Sandler",
-          email: "adamsandler@mainModule.com",
-          address: "4936 ELMWOOD LOS ANGELES CA 90004-1605 USA",
-          phone: "46543330",
-        }        
-      ],
-    },
-  }
+  // const seedUser = {
+  //   email: 'jane@prisma.io',
+  //   name: 'Jane',
+  //   contacts: {
+  //     create: [
+  //       {
+  //         name: "Rob",
+  //         lastname: "Schneider",
+  //         email: "robanima@mainModule.com",
+  //         address: "4935 ELMWOOD LOS ANGELES CA 90004-1605 USA",
+  //         phone: "46543329",
+  //       },
+  //       {
+  //         name: "Adam",
+  //         lastname: "Sandler",
+  //         email: "adamsandler@mainModule.com",
+  //         address: "4936 ELMWOOD LOS ANGELES CA 90004-1605 USA",
+  //         phone: "46543330",
+  //       }        
+  //     ],
+  //   },
+  // }
 
   try {
-    await prisma.contacts.deleteMany({
-      where: {
-        owner: {
-          email: 'jane@prisma.io',
-        },
-      },
-    })
-    await prisma.user.deleteMany({
-      where: {
-        email: 'jane@prisma.io',
-      },
-    })
-    console.log("hasta aca llegamos")
-    const result = await prisma.user.create({
-      data: seedUser,
-    })
+    // await prisma.contacts.deleteMany({
+    //   where: {
+    //     owner: {
+    //       email: 'jane@prisma.io',
+    //     },
+    //   },
+    // })
+    await prisma.contacts.deleteMany()
+    // await prisma.user.deleteMany({
+    //   where: {
+    //     email: 'jane@prisma.io',
+    //   },
+    // })
+    await prisma.user.deleteMany()
+    const result:any[]=[]
+    for(let i = 0; i<seed.length;i++) {
+      result.push(await prisma.user.create({
+        data: seed[i],
+      }))
+    }
     res.json(result)
   } catch (e) {
     console.error(e)
@@ -95,87 +100,16 @@ app.get(`/api/seed`, async (req, res) => {
   }
 })
 
-// app.post(`/api/user`, async (req, res) => {
-//   const result = await prisma.user.create({
-//     data: {
-//       ...req.body,
-//     },
-//   })
-//   res.json(result)
-// })
 
-// app.post(`/api/post`, async (req, res) => {
-//   const { title, content, authorEmail } = req.body
-//   const result = await prisma.post.create({
-//     data: {
-//       title,
-//       content,
-//       published: false,
-//       author: { connect: { email: authorEmail } },
-//     },
-//   })
-//   res.json(result)
-// })
 
-// app.put('/api/publish/:id', async (req, res) => {
-//   const { id } = req.params
-//   const post = await prisma.post.update({
-//     where: {
-//       id: parseInt(id),
-//     },
-//     data: { published: true },
-//   })
-//   res.json(post)
-// })
+app.get('/api/feed', async (req:Request, res:Response) => {
+  console.log("llego aca")
+  context.prisma.user.findMany({include:{contacts:true}})
+  .then(r=>res.json(r))
+  
+})
 
-// app.delete(`/api/post/:id`, async (req, res) => {
-//   const { id } = req.params
-//   const post = await prisma.post.delete({
-//     where: {
-//       id: parseInt(id),
-//     },
-//   })
-//   res.json(post)
-// })
 
-// app.get(`/api/post/:id`, async (req, res) => {
-//   const { id } = req.params
-//   const post = await prisma.post.findUnique({
-//     where: {
-//       id: parseInt(id),
-//     },
-//   })
-//   res.json(post)
-// })
-
-// app.get('/api/feed', async (req, res) => {
-//   const posts = await prisma.post.findMany({
-//     where: { published: true },
-//     include: { author: true },
-//   })
-//   res.json(posts)
-// })
-
-// app.get('/api/filterPosts', async (req, res) => {
-//   const { searchString } = req.query
-//   const draftPosts = await prisma.post.findMany({
-//     where: {
-//       OR: [
-//         {
-//           title: {
-//             contains: searchString,
-//           },
-//         },
-//         {
-//           content: {
-//             contains: searchString,
-//           },
-//         },
-//       ],
-//     },
-//   })
-//   res.json(draftPosts)
-// })
 
 const PORT = process.env.PORT || 3001
 const server = app.listen(PORT, ():void =>

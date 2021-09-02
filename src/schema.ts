@@ -55,9 +55,11 @@ const resolvers = {
       })  
     },
     contact: (_parent: any, args: { id: number }, context: Context) => {
-      return context.prisma.contacts.findUnique({
-        where: { id: args.id || undefined }
-      })    
+      if(args.id){
+        return context.prisma.contacts.findUnique({
+          where: { id: args.id || undefined }
+        })    
+      }
     },    
   },
   Mutation: {
