@@ -64,7 +64,7 @@ const resolvers = {
   },
   Mutation: {
     deleteContact: (_parent: any, args: { id: number }, context: Context) => {
-      console.log("se esta tratando de ejecutar",args.id)
+
       return context.prisma.contacts.delete({
         where: { id: args.id },
       })
