@@ -46,58 +46,64 @@ input ContactCreateInput {
 const resolvers = {
   Query: {
     users: (_parent:any, _args: any, context: Context) => {
-      return context.prisma.user.findMany({include:{contacts:true}})
+      try {
+        return context.prisma.user.findMany({include:{contacts:true}})
+      } catch(e) {console.log(e)}
     },
     user: (_parent: any, args: { id: number }, context: Context) => {
-      return context.prisma.user.findUnique({
-        where: { id: args.id || undefined },
-        include:{contacts:{orderBy: {lastname:'asc'}}}
-      })  
+      try {
+        return context.prisma.user.findUnique({
+          where: { id: args.id || undefined },
+          include:{contacts:{orderBy: {lastname:'asc'}}}
+      })} catch(e) {console.log(e)}
     },
     contact: (_parent: any, args: { id: number }, context: Context) => {
       if(args.id){
-        return context.prisma.contacts.findUnique({
-          where: { id: args.id || undefined }
-        })    
+        try {
+          return context.prisma.contacts.findUnique({
+            where: { id: args.id || undefined }
+        })} catch(e) {console.log(e)}    
       }
     },    
   },
   Mutation: {
     deleteContact: (_parent: any, args: { id: number }, context: Context) => {
-
-      return context.prisma.contacts.delete({
-        where: { id: args.id },
-      })
+      try {
+        return context.prisma.contacts.delete({
+          where: { id: args.id },
+      })} catch(e) {console.log(e)} 
     },
     createContact: (_parent: any, args: {data: ContactCreateInput, id: number }, context: Context) => {
-      return context.prisma.contacts.create({
-        data: {
-          name: args.data.name,
-          lastname: args.data.lastname,
-          email: args.data.email,
-          address: args.data.address,
-          phone: args.data.phone,
-          birthday: args.data.birthday,
-          owner: {
-            connect: { id: args.id },
+      try{
+        return context.prisma.contacts.create({
+          data: {
+            name: args.data.name,
+            lastname: args.data.lastname,
+            email: args.data.email,
+            address: args.data.address,
+            phone: args.data.phone,
+            birthday: args.data.birthday,
+            owner: {
+              connect: { id: args.id },
+            },
           },
-        },
-      })
+      })} catch(e) {console.log(e)} 
     },
     updateContact: (_parent: any, args: {data: ContactCreateInput, id: number }, context: Context) => {
-      return context.prisma.contacts.update({
-        where: {
-          id:args.id
-        },
-        data: {
-          name: args.data.name,
-          lastname: args.data.lastname,
-          email: args.data.email,
-          address: args.data.address,
-          phone: args.data.phone,
-          birthday: args.data.birthday
-        }
-      })
+      try{
+        return context.prisma.contacts.update({
+          where: {
+            id:args.id
+          },
+          data: {
+            name: args.data.name,
+            lastname: args.data.lastname,
+            email: args.data.email,
+            address: args.data.address,
+            phone: args.data.phone,
+            birthday: args.data.birthday
+          }
+      })} catch(e) {console.log(e)} 
     }            
   },
 }
